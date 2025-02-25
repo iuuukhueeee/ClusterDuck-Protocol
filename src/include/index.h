@@ -477,26 +477,14 @@ const char MAIN_page[] PROGMEM = R"=====(
           form.other = other;
           form.drinks = drinks;
           form.medicines = medicines;
-          const queryParams = new URLSearchParams(form).toString();
 
-          const getPairs = (obj, keys = []) =>
-            Object.entries(obj).reduce((pairs, [key, value]) => {
-              if (typeof value === "object")
-                pairs.push(...getPairs(value, [...keys, key]));
-              else pairs.push([[...keys, key], value]);
-              return pairs;
-            }, []);
-
-          const x = getPairs(form)
-            .map(
-              ([[key0, ...keysRest], value]) =>
-                `${key0}${keysRest.map((a) => `[${a}]`).join("")}=${value}`
-            )
-            .join("&");
+          const formData = new FormData();
+          formData.append("form", JSON.stringify(form));
 
           const send = async () => {
-            await fetch(`formSubmit.json?${x}`, {
-              method: "GET",
+            await fetch('formSubmit.json', {
+              method: "POST",
+              body: formData,
             });
           };
 
